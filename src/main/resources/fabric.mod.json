@@ -15,7 +15,8 @@
       "links": {
         "modmenu.discord": "${discord_url}"
       }
-    }
+    },
+    "polymer:resource_pack_include": true
   },
   "description": "${description}",
   "icon": "icon.png",
@@ -25,9 +26,6 @@
   "entrypoints": {
     "main": [
       "${group}.${id}.platform.fabric.FabricEntrypoint"
-    ],
-    "client": [
-      "${group}.${id}.platform.fabric.FabricClientEntrypoint"
     ]
   },
   "mixins": [

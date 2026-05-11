@@ -1,0 +1,6 @@
+{
+  "bannerpoint.config": "Bannerpoint Configuration",
+  "bannerpoint.config.transmitWhenNamed": "Transmit named banners",
+  "bannerpoint.config.transmitWhenTiedToMap": "Transmit banners tied to maps",
+  "bannerpoint.config.bannerTransmitRange": "Max transmit range"
+}

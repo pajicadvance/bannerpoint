@@ -28,32 +28,32 @@ public class BannerChunkConnection implements WaypointTransmitter.ChunkConnectio
 
 	@Override
 	public int distanceChessboard() {
-		return this.lastPosition.getChessboardDistance(ChunkPos.containing(source.getBlockPos()));
+		return lastPosition.getChessboardDistance(ChunkPos.containing(source.getBlockPos()));
 	}
 
 	@Override
 	public void connect() {
-		this.receiver.connection.send(ClientboundTrackedWaypointPacket.addWaypointChunk(uuid, this.icon, this.lastPosition));
+		receiver.connection.send(ClientboundTrackedWaypointPacket.addWaypointChunk(uuid, icon, lastPosition));
 	}
 
 	@Override
 	public void disconnect() {
-		this.receiver.connection.send(ClientboundTrackedWaypointPacket.removeWaypoint(uuid));
+		receiver.connection.send(ClientboundTrackedWaypointPacket.removeWaypoint(uuid));
 	}
 
 	@Override
 	public void update() {
 		ChunkPos currentPosition = ChunkPos.containing(source.getBlockPos());
-		if (currentPosition.getChessboardDistance(this.lastPosition) > 0) {
-			this.receiver.connection.send(ClientboundTrackedWaypointPacket.updateWaypointChunk(uuid, this.icon, currentPosition));
-			this.lastPosition = currentPosition;
+		if (currentPosition.getChessboardDistance(lastPosition) > 0) {
+			receiver.connection.send(ClientboundTrackedWaypointPacket.updateWaypointChunk(uuid, icon, currentPosition));
+			lastPosition = currentPosition;
 		}
 	}
 
 	@Override
 	public boolean isBroken() {
 		return WaypointTransmitter.ChunkConnection.super.isBroken() ||
-				BannerWaypointUtil.doesSourceIgnoreReceiver(this.source, this.receiver) ||
-				WaypointTransmitter.isChunkVisible(this.lastPosition, this.receiver);
+				BannerWaypointUtil.doesSourceIgnoreReceiver(source, receiver) ||
+				WaypointTransmitter.isChunkVisible(lastPosition, receiver);
 	}
 }

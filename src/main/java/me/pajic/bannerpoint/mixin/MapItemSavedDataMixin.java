@@ -19,7 +19,7 @@ public class MapItemSavedDataMixin {
 					target = "Lnet/minecraft/world/level/saveddata/maps/MapItemSavedData;removeDecoration(Ljava/lang/String;)V"
 			)
 	)
-	private void onRemovedFromMap(LevelAccessor level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+	private void stopTrackingOnRemovedFromMap(LevelAccessor level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
 		BannerWaypointUtil.setMapTracking(false, level, pos);
 	}
 
@@ -30,7 +30,7 @@ public class MapItemSavedDataMixin {
 					target = "Lnet/minecraft/world/level/saveddata/maps/MapItemSavedData;addDecoration(Lnet/minecraft/core/Holder;Lnet/minecraft/world/level/LevelAccessor;Ljava/lang/String;DDDLnet/minecraft/network/chat/Component;)V"
 			)
 	)
-	private void onAddedToMap(LevelAccessor level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+	private void startTrackingOnAddedToMap(LevelAccessor level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
 		BannerWaypointUtil.setMapTracking(true, level, pos);
 	}
 }

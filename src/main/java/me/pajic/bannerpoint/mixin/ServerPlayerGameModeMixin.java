@@ -27,7 +27,7 @@ public class ServerPlayerGameModeMixin {
 					//target = "Lnet/minecraft/server/level/ServerPlayerGameMode;removeBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;ZLnet/minecraft/world/item/ItemStack;)Z"
 			)
 	)
-	private void untrackBanner(CallbackInfoReturnable<Boolean> cir, @Local(name = "blockEntity") BlockEntity blockEntity) {
+	private void stopTrackingOnBreak(CallbackInfoReturnable<Boolean> cir, @Local(name = "blockEntity") BlockEntity blockEntity) {
 		if (blockEntity instanceof BannerBlockEntity bbe) BannerWaypointUtil.stopTracking(level, bbe);
 	}
 }

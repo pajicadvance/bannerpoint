@@ -2,16 +2,12 @@ package me.pajic.bannerpoint.mixin;
 
 import me.pajic.bannerpoint.Bannerpoint;
 import me.pajic.bannerpoint.extension.BannerBlockEntityExtension;
-import me.pajic.bannerpoint.waypoint.BannerAzimuthConnection;
-import me.pajic.bannerpoint.waypoint.BannerBlockConnection;
-import me.pajic.bannerpoint.waypoint.BannerChunkConnection;
 import me.pajic.bannerpoint.waypoint.BannerWaypointUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -50,7 +46,7 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Wayp
 			at = @At("TAIL")
 	)
 	private void onInit(BlockPos worldPosition, BlockState blockState, DyeColor color, CallbackInfo ci) {
-		bannerpoint$icon = BannerWaypointUtil.createBannerIcon(color.getTextColor());
+		bannerpoint$icon = BannerWaypointUtil.createBannerIcon(color);
 		bannerpoint$uuid = UUID.randomUUID();
 		bannerpoint$tiedToMap = false;
 	}
@@ -64,12 +60,7 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Wayp
 
 	@Override @NotNull
 	public Optional<Connection> makeWaypointConnectionWith(@NotNull ServerPlayer player) {
-		BannerBlockEntity self = (BannerBlockEntity) (Object) this;
-		if (BannerWaypointUtil.doesSourceIgnoreReceiver(self, player)) return Optional.empty();
-		if (BannerWaypointUtil.isReallyFar(self, player)) return Optional.of(new BannerAzimuthConnection(self, bannerpoint$icon, player));
-		return !WaypointTransmitter.isChunkVisible(ChunkPos.containing(self.getBlockPos()), player) ?
-					Optional.of(new BannerChunkConnection(self, bannerpoint$icon, player)) :
-					Optional.of(new BannerBlockConnection(self, bannerpoint$icon, player));
+		return BannerWaypointUtil.createConnection((BannerBlockEntity) (Object) this, player, bannerpoint$icon);
 	}
 
 	@Override @NotNull
@@ -103,7 +94,7 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Wayp
 
 	@Override
 	protected void loadAdditional(ValueInput input) {
-		bannerpoint$icon = input.read("locator_bar_icon", Icon.CODEC).orElse(BannerWaypointUtil.createBannerIcon(getBaseColor().getTextColor()));
+		bannerpoint$icon = input.read("locator_bar_icon", Icon.CODEC).orElse(BannerWaypointUtil.createBannerIcon(getBaseColor()));
 		bannerpoint$uuid = input.read("uuid", UUIDUtil.CODEC).orElse(UUID.randomUUID());
 		bannerpoint$tiedToMap = input.getBooleanOr("tied_to_map", false);
 		bannerpoint$hasCustomName = input.getBooleanOr("has_custom_name", false);

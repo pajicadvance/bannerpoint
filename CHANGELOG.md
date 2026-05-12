@@ -1,1 +1,1 @@
-- Initial release.
+- Adjusted banner waypoint icon colors to match the banner colors more closely.

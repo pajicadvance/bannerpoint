@@ -7,6 +7,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
@@ -31,21 +34,33 @@ public class BannerWaypointUtil {
 		level.getWaypointManager().untrackWaypoint((WaypointTransmitter) bbe);
 	}
 
+	public static void startTrackingOnInit(Level level, BlockEntity be) {
+		if (level instanceof ServerLevel serverLevel && be instanceof BannerBlockEntity bbe) startTracking(serverLevel, bbe);
+	}
+
 	public static void setMapTracking(boolean shouldTrack, LevelAccessor level, BlockPos pos) {
 		BlockEntity be = level.getBlockEntity(pos);
 		if (Bannerpoint.CONFIG.transmitWhenTiedToMap.get() && be instanceof BannerBlockEntity bbe && level instanceof ServerLevelAccessor sla) {
 			BannerBlockEntityExtension bbee = (BannerBlockEntityExtension) bbe;
 			bbee.bannerpoint$setTiedToMap(shouldTrack);
 			if (!bbee.bannerpoint$hasCustomName()) {
-				if (shouldTrack) BannerWaypointUtil.startTracking(sla.getLevel(), bbe);
-				else BannerWaypointUtil.stopTracking(sla.getLevel(), bbe);
+				if (shouldTrack) startTracking(sla.getLevel(), bbe);
+				else stopTracking(sla.getLevel(), bbe);
 			}
 			bbe.setChanged();
 		}
 	}
 
-	public static Waypoint.Icon createBannerIcon(int color) {
-		return new Waypoint.Icon(BANNER, Optional.of(color));
+	public static Optional<WaypointTransmitter.Connection> createConnection(BannerBlockEntity bbe, ServerPlayer player, Waypoint.Icon icon) {
+		if (doesSourceIgnoreReceiver(bbe, player)) return Optional.empty();
+		if (isReallyFar(bbe, player)) return Optional.of(new BannerAzimuthConnection(bbe, icon, player));
+		return !WaypointTransmitter.isChunkVisible(ChunkPos.containing(bbe.getBlockPos()), player) ?
+				Optional.of(new BannerChunkConnection(bbe, icon, player)) :
+				Optional.of(new BannerBlockConnection(bbe, icon, player));
+	}
+
+	public static Waypoint.Icon createBannerIcon(DyeColor color) {
+		return new Waypoint.Icon(BANNER, Optional.of(color.getTextureDiffuseColor()));
 	}
 
 	public static boolean doesSourceIgnoreReceiver(final BannerBlockEntity source, final ServerPlayer receiver) {

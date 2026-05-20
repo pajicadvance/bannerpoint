@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "bannerpoint",
+  "version": "${version}",
+  "name": "Bannerpoint",
+  "description": "Turn banners into locator bar waypoints",
+  "authors": ["pajic"],
+  "contact": {
+    "sources": "https://github.com/pajicadvance/bannerpoint",
+    "issues": "https://github.com/pajicadvance/bannerpoint/issues",
+    "homepage": "https://modrinth.com/mod/bannerpoint"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/5RkzS66zWb"
+      }
+    },
+    "polymer:resource_pack_include": true
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "*",
+  "accessWidener": "bannerpoint.accesswidener",
+  "entrypoints": {
+    "main": [
+      "me.pajic.bannerpoint.Bannerpoint"
+    ]
+  },
+  "mixins": [
+    "bannerpoint.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": ">=1.21.6 <26.1",
+    "fzzy_config": "*"
+  }
+}

@@ -1,1 +1,1 @@
-- Adjusted banner waypoint icon colors to match the banner colors more closely.
+- Fixed a bug that caused banners to lose their custom pattern and name.

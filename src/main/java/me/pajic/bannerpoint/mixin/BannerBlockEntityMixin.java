@@ -51,6 +51,28 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Wayp
 		bannerpoint$tiedToMap = false;
 	}
 
+	@Inject(
+			method = "saveAdditional",
+			at = @At("TAIL")
+	)
+	private void saveModData(ValueOutput output, CallbackInfo ci) {
+		output.store("locator_bar_icon", Waypoint.Icon.CODEC, bannerpoint$icon);
+		output.store("uuid", UUIDUtil.CODEC, bannerpoint$uuid);
+		output.putBoolean("tied_to_map", bannerpoint$tiedToMap);
+		output.putBoolean("has_custom_name", bannerpoint$hasCustomName);
+	}
+
+	@Inject(
+			method = "loadAdditional",
+			at = @At("TAIL")
+	)
+	private void loadModData(ValueInput input, CallbackInfo ci) {
+		bannerpoint$icon = input.read("locator_bar_icon", Icon.CODEC).orElse(BannerWaypointUtil.createBannerIcon(getBaseColor()));
+		bannerpoint$uuid = input.read("uuid", UUIDUtil.CODEC).orElse(UUID.randomUUID());
+		bannerpoint$tiedToMap = input.getBooleanOr("tied_to_map", false);
+		bannerpoint$hasCustomName = input.getBooleanOr("has_custom_name", false);
+	}
+
 	@Override
 	public boolean isTransmittingWaypoint() {
 		if (hasCustomName()) bannerpoint$hasCustomName = true;
@@ -81,23 +103,5 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Wayp
 	@Override
 	public boolean bannerpoint$hasCustomName() {
 		return bannerpoint$hasCustomName;
-	}
-
-	@Override
-	protected void saveAdditional(ValueOutput output) {
-		output.store("locator_bar_icon", Waypoint.Icon.CODEC, bannerpoint$icon);
-		output.store("uuid", UUIDUtil.CODEC, bannerpoint$uuid);
-		output.putBoolean("tied_to_map", bannerpoint$tiedToMap);
-		output.putBoolean("has_custom_name", bannerpoint$hasCustomName);
-		super.saveAdditional(output);
-	}
-
-	@Override
-	protected void loadAdditional(ValueInput input) {
-		bannerpoint$icon = input.read("locator_bar_icon", Icon.CODEC).orElse(BannerWaypointUtil.createBannerIcon(getBaseColor()));
-		bannerpoint$uuid = input.read("uuid", UUIDUtil.CODEC).orElse(UUID.randomUUID());
-		bannerpoint$tiedToMap = input.getBooleanOr("tied_to_map", false);
-		bannerpoint$hasCustomName = input.getBooleanOr("has_custom_name", false);
-		super.loadAdditional(input);
 	}
 }

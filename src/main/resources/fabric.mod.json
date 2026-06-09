@@ -26,6 +26,9 @@
   "entrypoints": {
     "main": [
       "${group}.${id}.platform.fabric.FabricEntrypoint"
+    ],
+    "client": [
+      "${group}.${id}.platform.fabric.FabricClientEntrypoint"
     ]
   },
   "mixins": [

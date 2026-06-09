@@ -5,6 +5,7 @@ import me.pajic.bannerpoint.extension.BannerBlockEntityExtension;
 import me.pajic.bannerpoint.waypoint.BannerWaypointUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.item.DyeColor;
@@ -103,5 +104,10 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Wayp
 	@Override
 	public boolean bannerpoint$hasCustomName() {
 		return bannerpoint$hasCustomName;
+	}
+
+	@Override
+	public Component bannerpoint$getCustomName() {
+		return getCustomName();
 	}
 }

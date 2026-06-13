@@ -1,6 +1,7 @@
 package me.pajic.bannerpoint.waypoint;
 
 import me.pajic.bannerpoint.extension.BannerBlockEntityExtension;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundTrackedWaypointPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -24,7 +25,8 @@ public class BannerAzimuthConnection implements WaypointTransmitter.Connection {
 		this.source = source;
 		this.icon = icon;
 		this.receiver = receiver;
-		Vec3 direction = receiver.position().subtract(source.getBlockPos().getCenter()).rotateClockwise90();
+		BlockPos pos = source.getBlockPos();
+		Vec3 direction = receiver.position().subtract(pos.getX(), pos.getY(), pos.getZ()).rotateClockwise90();
 		lastAngle = (float) Mth.atan2(direction.z(), direction.x());
 		uuid = ((BannerBlockEntityExtension) source).bannerpoint$getUUID();
 	}
@@ -48,7 +50,8 @@ public class BannerAzimuthConnection implements WaypointTransmitter.Connection {
 
 	@Override
 	public void update() {
-		Vec3 direction = receiver.position().subtract(source.getBlockPos().getCenter()).rotateClockwise90();
+		BlockPos pos = source.getBlockPos();
+		Vec3 direction = receiver.position().subtract(pos.getX(), pos.getY(), pos.getZ()).rotateClockwise90();
 		float currentAngle = (float) Mth.atan2(direction.z(), direction.x());
 		if (Mth.abs(currentAngle - lastAngle) > 0.008726646F) {
 			receiver.connection.send(ClientboundTrackedWaypointPacket.updateWaypointAzimuth(uuid, icon, currentAngle));

@@ -1,6 +1,2 @@
-- Named banners will now show their name above the waypoint icon in the locator bar when Tab or Shift are held down.
-  - Tab shows names for all banners visible on the bar
-  - Shift shows the name of the banner you're looking towards
-  - Works only if the mod is installed client-side, mod can still be used fully server-side but clients without the mod won't be able to see banner names
-  - Has config options for text color, shadow and background
-- Tracked banners are now saved to level data to ensure all waypoints are loaded properly on world reload, regardless of how far they are.
+- Fixed possible CME on world load.
+- Preparation for MC 26.2. This version will be flagged as 26.2 compatible once it releases, and will still work on 26.1.

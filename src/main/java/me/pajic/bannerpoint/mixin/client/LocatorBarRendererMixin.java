@@ -5,7 +5,6 @@ import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import me.pajic.bannerpoint.client.BannerNameRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.contextualbar.LocatorBarRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.waypoints.PartialTickSupplier;
@@ -18,7 +17,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @MixinEnvironment(type = MixinEnvironment.Env.CLIENT)
-@Mixin(LocatorBarRenderer.class)
+@Mixin(targets = {
+		"net.minecraft.client.gui.contextualbar.LocatorBar",
+		"net.minecraft.client.gui.contextualbar.LocatorBarRenderer"
+})
 public class LocatorBarRendererMixin {
 
 	@Shadow @Final private Minecraft minecraft;

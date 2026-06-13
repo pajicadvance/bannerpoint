@@ -8,7 +8,6 @@ import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedNumber;
 import me.pajic.bannerpoint.Bannerpoint;
-import net.minecraft.world.waypoints.Waypoint;
 
 @Version(version = 1)
 @RequiresAction(action = Action.RELOG)
@@ -20,5 +19,5 @@ public class ModConfig extends Config {
 
 	public ValidatedBoolean transmitWhenNamed = new ValidatedBoolean();
 	public ValidatedBoolean transmitWhenTiedToMap = new ValidatedBoolean();
-	public ValidatedDouble bannerTransmitRange = new ValidatedDouble(Waypoint.MAX_RANGE, Waypoint.MAX_RANGE, 1, ValidatedNumber.WidgetType.TEXTBOX);
+	public ValidatedDouble bannerTransmitRange = new ValidatedDouble(60000000, 60000000, 1, ValidatedNumber.WidgetType.TEXTBOX);
 }

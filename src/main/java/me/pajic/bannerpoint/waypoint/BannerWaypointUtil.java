@@ -14,9 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.waypoints.Waypoint;
@@ -29,44 +26,52 @@ import java.util.Optional;
 public class BannerWaypointUtil {
 
 	private static final ResourceKey<WaypointStyleAsset> BANNER = ResourceKey.create(WaypointStyleAssets.ROOT_ID, Bannerpoint.id("banner"));
+	public static boolean savedDataLoadFinished = false;
 
-	public static void startTracking(ServerLevel level, BannerBlockEntity bbe) {
+	public static void startTrackingSaved(ServerLevel level, LevelSavedBanners data) {
+		data.getBanners().forEach(pos -> {
+			BlockEntity be = level.getBlockEntity(pos);
+			if (be instanceof BannerBlockEntity bbe) startTracking(level, bbe, false);
+		});
+		savedDataLoadFinished = true;
+		Bannerpoint.debugLog("Finished loading saved banners");
+	}
+
+	public static void startTrackingOnInit(ServerLevel level, BlockEntity be) {
+		if (savedDataLoadFinished && level instanceof ServerLevel serverLevel && be instanceof BannerBlockEntity bbe) startTracking(serverLevel, bbe, true);
+	}
+
+	public static void setMapTracking(boolean shouldTrack, ServerLevel level, BlockPos pos) {
+		BlockEntity be = level.getBlockEntity(pos);
+		if (Bannerpoint.CONFIG.transmitWhenTiedToMap.get() && be instanceof BannerBlockEntity bbe) {
+			BannerBlockEntityExtension bbee = (BannerBlockEntityExtension) bbe;
+			bbee.bannerpoint$setTiedToMap(shouldTrack);
+			if (!bbee.bannerpoint$hasCustomName()) {
+				if (shouldTrack) startTracking(level.getLevel(), bbe, true);
+				else stopTracking(level.getLevel(), bbe);
+			}
+			bbe.setChanged();
+		}
+	}
+
+	public static void startTracking(ServerLevel level, BannerBlockEntity bbe, boolean save) {
 		WaypointTransmitter wt = (WaypointTransmitter) bbe;
-		if (wt.isTransmittingWaypoint()) level.getWaypointManager().trackWaypoint(wt);
-		LevelSavedBanners data = ((ServerLevelExtension) level).bannerpoint$getSavedBanners();
-		data.saveBanner(bbe.getBlockPos());
+		Bannerpoint.debugLog("Attempting to track banner at {}", bbe.getBlockPos().toShortString());
+		if (wt.isTransmittingWaypoint()) {
+			level.getWaypointManager().trackWaypoint(wt);
+			Bannerpoint.debugLog("Started tracking banner");
+		}
+		if (save) {
+			LevelSavedBanners data = ((ServerLevelExtension) level).bannerpoint$getSavedBanners();
+			data.saveBanner(bbe.getBlockPos());
+			Bannerpoint.debugLog("Saved banner to level data");
+		}
 	}
 
 	public static void stopTracking(ServerLevel level, BannerBlockEntity bbe) {
 		level.getWaypointManager().untrackWaypoint((WaypointTransmitter) bbe);
 		LevelSavedBanners data = ((ServerLevelExtension) level).bannerpoint$getSavedBanners();
 		data.removeBanner(bbe.getBlockPos());
-	}
-
-	public static void startTrackingOnInit(Level level, BlockEntity be) {
-		if (level instanceof ServerLevel serverLevel && be instanceof BannerBlockEntity bbe) startTracking(serverLevel, bbe);
-	}
-
-	public static void setMapTracking(boolean shouldTrack, LevelAccessor level, BlockPos pos) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (Bannerpoint.CONFIG.transmitWhenTiedToMap.get() && be instanceof BannerBlockEntity bbe && level instanceof ServerLevelAccessor sla) {
-			BannerBlockEntityExtension bbee = (BannerBlockEntityExtension) bbe;
-			bbee.bannerpoint$setTiedToMap(shouldTrack);
-			if (!bbee.bannerpoint$hasCustomName()) {
-				if (shouldTrack) startTracking(sla.getLevel(), bbe);
-				else stopTracking(sla.getLevel(), bbe);
-			}
-			bbe.setChanged();
-		}
-	}
-
-	public static void startTrackingSaved(LevelAccessor level, LevelSavedBanners data) {
-		if (level instanceof ServerLevelAccessor sla) {
-			data.getBanners().forEach(pos -> {
-				BlockEntity be = sla.getBlockEntity(pos);
-				if (be instanceof BannerBlockEntity bbe) startTracking(sla.getLevel(), bbe);
-			});
-		}
 	}
 
 	@SuppressWarnings("resource")
@@ -96,10 +101,10 @@ public class BannerWaypointUtil {
 	}
 
 	public static boolean isReallyFar(final BannerBlockEntity source, final ServerPlayer receiver) {
-		return distance(source.getBlockPos(), receiver) > WaypointTransmitter.REALLY_FAR_DISTANCE;
+		return distance(source.getBlockPos(), receiver) > 332;
 	}
 
 	private static double distance(final BlockPos source, final ServerPlayer receiver) {
-		return Math.sqrt(receiver.distanceToSqr(source.getCenter()));
+		return Math.sqrt(receiver.distanceToSqr(source.getX(), source.getY(), source.getZ()));
 	}
 }

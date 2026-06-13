@@ -1,6 +1,7 @@
 package me.pajic.bannerpoint.mixin;
 
 import me.pajic.bannerpoint.waypoint.BannerWaypointUtil;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +22,8 @@ public class BlockEntityMixin {
 			require = 2
 	)
 	private void startTrackingOnInit(CallbackInfo ci) {
-		BannerWaypointUtil.startTrackingOnInit(level, (BlockEntity) (Object) this);
+		if (level instanceof ServerLevel serverLevel) {
+			BannerWaypointUtil.startTrackingOnInit(serverLevel, (BlockEntity) (Object) this);
+		}
 	}
 }

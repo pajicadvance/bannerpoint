@@ -3,6 +3,7 @@ package me.pajic.bannerpoint.mixin;
 import me.pajic.bannerpoint.waypoint.BannerWaypointUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +21,9 @@ public class MapItemSavedDataMixin {
 			)
 	)
 	private void stopTrackingOnRemovedFromMap(LevelAccessor level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-		BannerWaypointUtil.setMapTracking(false, level, pos);
+		if (level instanceof ServerLevelAccessor sla) {
+			BannerWaypointUtil.setMapTracking(false, sla.getLevel(), pos);
+		}
 	}
 
 	@Inject(
@@ -31,6 +34,8 @@ public class MapItemSavedDataMixin {
 			)
 	)
 	private void startTrackingOnAddedToMap(LevelAccessor level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-		BannerWaypointUtil.setMapTracking(true, level, pos);
+		if (level instanceof ServerLevelAccessor sla) {
+			BannerWaypointUtil.setMapTracking(true, sla.getLevel(), pos);
+		}
 	}
 }

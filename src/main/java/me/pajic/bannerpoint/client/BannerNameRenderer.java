@@ -30,18 +30,19 @@ public class BannerNameRenderer {
 		if (minecraft.options.keyPlayerList.isDown() || (minecraft.options.keyShift.isDown() && angle <= 0.5 && angle >= -0.5)) {
 			waypoint.id().left().ifPresent(uuid -> {
 				Component name = BannerpointClient.CONFIG.coloredText.get() ?
-						BannerNameRenderer.getName(uuid) :
-						MutableComponent.create(BannerNameRenderer.getName(uuid).getContents()).withColor(0xffffffff);
-				Font font = minecraft.font;
-				int x = screenMiddle + dotPosition + 5 - font.width(name) / 2;
-				int y = top - 12;
-				if (BannerpointClient.CONFIG.textBackground.get()) {
-					graphics.fill(
-							x - 2, y - 2, x + font.width(name) + 2, y + 10,
-							ARGB.color(ARGB.as8BitChannel((float) BannerpointClient.CONFIG.textBackgroundOpacity.get() / 100), 0, 0, 0)
-					);
+						getName(uuid) : MutableComponent.create(getName(uuid).getContents()).withColor(0xffffffff);
+				if (!name.getString().isBlank()) {
+					Font font = minecraft.font;
+					int x = screenMiddle + dotPosition + 5 - font.width(name) / 2;
+					int y = top - 12;
+					if (BannerpointClient.CONFIG.textBackground.get()) {
+						graphics.fill(
+								x - 2, y - 2, x + font.width(name) + 2, y + 10,
+								ARGB.color(ARGB.as8BitChannel((float) BannerpointClient.CONFIG.textBackgroundOpacity.get() / 100), 0, 0, 0)
+						);
+					}
+					graphics.text(font, name, x, y, 0xffffffff, BannerpointClient.CONFIG.textShadow.get());
 				}
-				graphics.text(font, name, x, y, 0xffffffff, BannerpointClient.CONFIG.textShadow.get());
 			});
 		}
 	}

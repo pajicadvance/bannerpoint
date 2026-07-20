@@ -1,2 +1,1 @@
-- Fixed possible CME on world load.
-- Preparation for MC 26.2. This version will be flagged as 26.2 compatible once it releases, and will still work on 26.1.
+- Banner name no longer shows up on the bar if the name is blank.

@@ -1,37 +1,35 @@
 # general
-mod.id = "modid"
-mod.name = "Template mod"
+mod.id = "bannerpoint"
+mod.name = "Bannerpoint"
 mod.group = "me.pajic"
-mod.version = "1.0.0"
-mod.description = ""
+mod.version = "1.1.2"
+mod.description = "Turn banners into locator bar waypoints"
 mod.authors = "pajic"
 mod.contributors = ""
 mod.license = "MIT"
 
 # links
-mod.sources_url = "https://github.com/pajicadvance/modid"
-mod.homepage_url = "https://modrinth.com/mod/modid"
-mod.issues_url = "https://github.com/pajicadvance/modid/issues"
+mod.sources_url = "https://github.com/pajicadvance/bannerpoint"
+mod.homepage_url = "https://modrinth.com/mod/bannerpoint"
+mod.issues_url = "https://github.com/pajicadvance/bannerpoint/issues"
 mod.discord_url = "https://discord.gg/5RkzS66zWb"
 
 # publishing
-publish.modrinth = ""
-publish.curseforge = ""
-publish.env.mr = "CLIENT_AND_SERVER" #https://modmuss50.github.io/mod-publish-plugin/platforms/modrinth/#all-options
-publish.env.cf.client = true
+publish.modrinth = "IfTBNyjQ"
+publish.curseforge = "1540780"
+publish.env.mr = "SERVER_ONLY_CLIENT_OPTIONAL" #https://modmuss50.github.io/mod-publish-plugin/platforms/modrinth/#all-options
+publish.env.cf.client = false
 publish.env.cf.server = true
-publish.dry_run = true
+publish.dry_run = false
 
 # loom
 loomx.loom_version = "1.17-SNAPSHOT"
 
 # dependencies
 loader.fabric = "0.19.5"
-dep.mixinconstraints.coords = "com.moulberry:$id:$version"
 dep.fzzy_config.coords = "me.fzzyhmstrs:$id:$version"
 dep.fzzy_config.slug = "fzzy-config"
 dep.sodium.coords = "net.caffeinemc:$id-$loader:$version"
-include.mixinconstraints = "1.1.0"
 dev.runtime_optionals = []
 
 [fabric]
@@ -44,8 +42,6 @@ dep.modmenu.coords = "com.terraformersmc:$id:$version"
 ["1.21.1"]
 mod.mc_releases = ["1.21", "1.21.1"]
 loader.neo = "21.1.250"
-dep.mixson.coords = "com.github:Mixson:$version"
-include.mixson = "2.2.0"
 runtime.sodium = "0.8.13+mc1.21.1"
 
 [fabric."1.21.1"]
@@ -62,8 +58,6 @@ required.fzzy_config = "0.7.6+1.21+neoforge"
 ["26.1"]
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
 loader.neo = "26.1.2.107"
-dep.mixson.coords = "maven.modrinth:$id:$version"
-required.mixson = "2.2.0"
 runtime.sodium = "0.9.2+mc26.1.2"
 
 [fabric."26.1"]
@@ -80,8 +74,6 @@ required.fzzy_config = "0.7.6+26.1-pre-3+neoforge"
 ["26.2"]
 mod.mc_releases = ["26.2"]
 loader.neo = "26.2.0.82"
-dep.mixson.coords = "maven.modrinth:$id:$version"
-required.mixson = "2.2.0"
 runtime.sodium = "0.9.2+mc26.2"
 
 [fabric."26.2"]
@@ -96,16 +88,14 @@ required.fzzy_config = "0.7.6+26.2+neoforge"
 
 
 ["26.3"]
-mod.mc_releases = ["26.3-pre.1"]
+mod.mc_releases = ["26.3"]
 #loader.neo = "26.2.0.36-beta"
-dep.mixson.coords = "maven.modrinth:$id:$version"
-required.mixson = "2.2.0"
-runtime.sodium = "0.9.2-beta.2+mc26.3r1"
+runtime.sodium = "0.9.2+mc26.3"
 
 [fabric."26.3"]
 mod.mc_compat = "~26.3"
-required.fabric-api = "0.160.4+26.3"
-required.fzzy_config = "0.7.6+26.2-pre-3"
+required.fabric-api = "0.160.5+26.3"
+required.fzzy_config = "0.7.7+26.3"
 runtime.modmenu = "21.0.0-beta.1"
 
 #[neoforge."26.2"]

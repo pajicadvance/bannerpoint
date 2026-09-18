@@ -28,12 +28,11 @@ stonecutter {
         fun match(project: String, vararg loaders: String, version: String = project) {
             for (loader in loaders) version("$project-$loader", version).buildscript("build.$loader.gradle.kts")
         }
-        match("1.21.1", "fabric", "neoforge")
         match("26.1", "fabric", "neoforge", version = "26.1.2")
         match("26.2", "fabric", "neoforge")
-        match("26.3", "fabric", version = "26.3-rc-2")
-        vcsVersion = "26.2-fabric"
+        match("26.3", "fabric")
+        vcsVersion = "26.3-fabric"
     }
 }
 
-rootProject.name = "Multicutter"
+rootProject.name = "Bannerpoint"

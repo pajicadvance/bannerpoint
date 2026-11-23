@@ -33,6 +33,7 @@ public class BannerChunkConnection implements WaypointTransmitter.ChunkConnectio
 
 	@Override
 	public void connect() {
+		BannerWaypointUtil.sendName(source, receiver);
 		receiver.connection.send(ClientboundTrackedWaypointPacket.addWaypointChunk(uuid, icon, lastPosition));
 	}
 

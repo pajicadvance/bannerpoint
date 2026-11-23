@@ -10,14 +10,17 @@ import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedNumber;
 import me.pajic.bannerpoint.Bannerpoint;
 
 @Version(version = 1)
-@RequiresAction(action = Action.RELOG)
 public class ModConfig extends Config {
 
 	public ModConfig() {
 		super(Bannerpoint.id("config"));
 	}
 
+	@RequiresAction(action = Action.RESTART)
 	public ValidatedBoolean transmitWhenNamed = new ValidatedBoolean();
+	@RequiresAction(action = Action.RESTART)
 	public ValidatedBoolean transmitWhenTiedToMap = new ValidatedBoolean();
+	public ValidatedBoolean showDistance = new ValidatedBoolean();
+	@RequiresAction(action = Action.RESTART)
 	public ValidatedDouble bannerTransmitRange = new ValidatedDouble(60000000, 60000000, 1, ValidatedNumber.WidgetType.TEXTBOX);
 }

@@ -2,11 +2,25 @@
   "bannerpoint.config": "Common Configuration",
   "bannerpoint.config.transmitWhenNamed": "Transmit named banners",
   "bannerpoint.config.transmitWhenTiedToMap": "Transmit banners tied to maps",
+  "bannerpoint.config.showDistance": "Show distance to banners",
   "bannerpoint.config.bannerTransmitRange": "Max transmit range",
 
   "bannerpoint.client_config": "Client Configuration",
+  "bannerpoint.client_config.nameDisplay": "Show all banner names",
+  "bannerpoint.client_config.nameDisplay.ALWAYS": "Always",
+  "bannerpoint.client_config.nameDisplay.HOLD_KEY": "While holding key",
+  "bannerpoint.client_config.nameDisplay.TOGGLE_KEY": "Toggle with key",
+  "bannerpoint.client_config.nameDisplay.NEVER": "Never",
+  "bannerpoint.client_config.useTabAndShift": "Show names with Tab (all) and Shift (at crosshair)",
+  "bannerpoint.client_config.showLookedAtName": "Show name of banner at crosshair",
+  "bannerpoint.client_config.lookAtThreshold": "Crosshair tolerance (pixels)",
+  "bannerpoint.client_config.maxNameWidth": "Max name width (pixels)",
   "bannerpoint.client_config.coloredText": "Text color matches banner color",
+  "bannerpoint.client_config.textOutline": "Text outline",
   "bannerpoint.client_config.textShadow": "Text drops shadow",
   "bannerpoint.client_config.textBackground": "Show text background",
-  "bannerpoint.client_config.textBackgroundOpacity": "Text background opacity"
+  "bannerpoint.client_config.textBackgroundOpacity": "Text background opacity",
+
+  "key.category.bannerpoint.keys": "Bannerpoint",
+  "key.bannerpoint.show_names": "Show banner names"
 }

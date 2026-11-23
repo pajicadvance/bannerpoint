@@ -2,6 +2,7 @@ package me.pajic.bannerpoint.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.pajic.bannerpoint.client.BannerNameRenderer;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.Entity;
@@ -29,10 +30,11 @@ public class LocatorBarRendererMixin {
 			at = @At(
 					value = "INVOKE",
                     //~ if >26.2 'blaze3d' -> 'renderpearl/api'
-                    target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V"
+                    target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V",
+					ordinal = 0
 			)
 	)
-	private void renderBannerNames(
+	private void collectBannerNames(
 			Entity cameraEntity,
 			Level level,
 			PartialTickSupplier partialTickSupplier,
@@ -40,10 +42,17 @@ public class LocatorBarRendererMixin {
 			int top,
 			TrackedWaypoint waypoint,
 			CallbackInfo ci,
-			@Local(name = "angle") double angle,
 			@Local(name = "screenMiddle") int screenMiddle,
 			@Local(name = "dotPosition") int dotPosition
 	) {
-		BannerNameRenderer.renderBannerName(minecraft, graphics, waypoint, screenMiddle, dotPosition, top, angle);
+		BannerNameRenderer.collect(waypoint, cameraEntity, screenMiddle, dotPosition, top);
+	}
+
+	@Inject(
+			method = "extractRenderState",
+			at = @At("TAIL")
+	)
+	private void renderBannerNames(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+		BannerNameRenderer.render(minecraft, graphics);
 	}
 }

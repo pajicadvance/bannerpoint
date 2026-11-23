@@ -118,10 +118,25 @@ loom {
         options.put("mark-corresponding-synthetics", "1")
     }
 
-    runConfigs.all {
+    runConfigs.matching { it.name != "gameTest" }.all {
         preferGradleTask = true
         generateRunConfig = true
         runDirectory = rootProject.file("run/${sc.current.version.replace(".", "_")}_fabric/")
+    }
+}
+
+fabricApi.configureTests {
+    createSourceSet = true
+    modId = "${property("mod.id")}_gametest"
+    enableGameTests = true
+    enableClientGameTests = true
+    eula = true
+}
+
+tasks.named<ProcessResources>("processGametestResources") {
+    val mainResources = sourceSets.main.get().output.resourcesDir!!
+    filesMatching("fabric.mod.json") {
+        if (file.startsWith(mainResources)) exclude()
     }
 }
 

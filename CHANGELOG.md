@@ -1,1 +1,23 @@
-- Added Fabric 26.3 version.
+- Added NeoForge 26.3 version.
+- Reworked how banner names are shown in the locator bar:
+  - Tab (all names) and Shift (name at the crosshair) can still be used, and can now be turned off in the client config.
+  - Added a "Show banner names" keybind (unbound by default) with a display mode option: always, while holding the key, toggle with the key, or never.
+  - Added an option to always show the name of the banner at the crosshair, with a configurable tolerance.
+  - The Shift and crosshair checks now use a pixel tolerance instead of a nearly exact angle, so they are much easier to trigger.
+  - Overlapping names are now stacked instead of drawn over each other.
+  - Long names are shortened with "…" (configurable max width), and names no longer go off the edge of the screen.
+  - Added a text outline option (on by default) that keeps names readable on any banner color.
+  - The distance to each banner is now shown next to its name. This can be turned off in the common config, so servers can control it for their players.
+  - Names now fade in and out.
+  - Renaming a banner now updates its name for everyone right away.
+  - Names with their own color now use that color instead of the banner color.
+- Fixed banner waypoints being tracked multiple times after their chunk was unloaded and reloaded, which left ghost waypoints behind after breaking the banner and kept adding server load.
+- Fixed waypoints not being removed when a banner was destroyed by anything other than a player (explosions, pistons, breaking the block it stands on, commands).
+- Fixed every banner ever loaded being saved, which made the server load all of their chunks on startup.
+- Fixed copied banners (pick block with data, structures, `/clone`) sharing the original banner's waypoint and map binding.
+- Fixed binding a named banner to a map not doing anything while transmitting named banners was disabled.
+- Fixed a banner bound to several maps stopping to transmit after being removed from only one of them.
+- Fixed removing a banner's name not stopping it from transmitting.
+- Fixed clients without the mod not being able to join NeoForge servers.
+- Fixed banner names losing their formatting, and names from a previous server being kept after switching servers.
+- Banner name syncing has changed, so both the server and the client need this version for names to show.

@@ -20,6 +20,7 @@ public class BannerAzimuthConnection implements WaypointTransmitter.Connection {
 	private final Waypoint.Icon icon;
 	private final ServerPlayer receiver;
 	private float lastAngle;
+	private int lastDistance;
 
 	public BannerAzimuthConnection(final BannerBlockEntity source, final Waypoint.Icon icon, final ServerPlayer receiver) {
 		this.source = source;
@@ -29,6 +30,7 @@ public class BannerAzimuthConnection implements WaypointTransmitter.Connection {
 		Vec3 direction = receiver.position().subtract(pos.getX(), pos.getY(), pos.getZ()).rotateClockwise90();
 		lastAngle = (float) Mth.atan2(direction.z(), direction.x());
 		uuid = ((BannerBlockEntityExtension) source).bannerpoint$getUUID();
+		lastDistance = BannerWaypointUtil.roundedDistance(source, receiver);
 	}
 
 	@Override
@@ -40,6 +42,8 @@ public class BannerAzimuthConnection implements WaypointTransmitter.Connection {
 
 	@Override
 	public void connect() {
+		BannerWaypointUtil.sendName(source, receiver);
+		BannerWaypointUtil.sendFarDistance(uuid, receiver, lastDistance);
 		receiver.connection.send(ClientboundTrackedWaypointPacket.addWaypointAzimuth(uuid, icon, lastAngle));
 	}
 
@@ -56,6 +60,11 @@ public class BannerAzimuthConnection implements WaypointTransmitter.Connection {
 		if (Mth.abs(currentAngle - lastAngle) > 0.008726646F) {
 			receiver.connection.send(ClientboundTrackedWaypointPacket.updateWaypointAzimuth(uuid, icon, currentAngle));
 			lastAngle = currentAngle;
+		}
+		int currentDistance = BannerWaypointUtil.roundedDistance(source, receiver);
+		if (currentDistance != lastDistance) {
+			BannerWaypointUtil.sendFarDistance(uuid, receiver, currentDistance);
+			lastDistance = currentDistance;
 		}
 	}
 }

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "bannerpoint_gametest",
+  "version": "1.0.0",
+  "name": "Bannerpoint Game Tests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "me.pajic.bannerpoint.gametest.BannerpointGameTests"
+    ],
+    "fabric-client-gametest": [
+      "me.pajic.bannerpoint.gametest.BannerpointClientGameTest"
+    ]
+  },
+  "depends": {
+    "bannerpoint": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

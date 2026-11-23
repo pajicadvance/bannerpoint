@@ -16,7 +16,8 @@
       "links": {
         "modmenu.discord": "${discord_url}"
       }
-    }
+    },
+    "polymer:resource_pack_include": true
   },
   "license": "${license}",
   "icon": "icon.png",

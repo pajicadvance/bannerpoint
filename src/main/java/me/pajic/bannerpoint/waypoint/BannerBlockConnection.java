@@ -28,6 +28,7 @@ public class BannerBlockConnection implements WaypointTransmitter.BlockConnectio
 
 	@Override
 	public void connect() {
+		BannerWaypointUtil.sendName(source, receiver);
 		receiver.connection.send(ClientboundTrackedWaypointPacket.addWaypointPosition(uuid, icon, lastPosition));
 	}
 

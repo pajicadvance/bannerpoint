@@ -1,35 +1,7 @@
-# Multicutter
+# Bannerpoint
 
-Based on [Stonecutter Fabric & NeoForge template](https://github.com/stonecutter-versioning/stonecutter-template-multiloader)
+Bannerpoint allows turning banners into waypoints that show up in the locator bar. Waypoints can be made by either naming the banner in an anvil and placing it, or by binding it to a map. Both methods can be toggled in the config. Waypoints made this way have unique icons with a color matching the banner's base color. Hold Tab to show all banner names above their icons in the locator bar, or Shift to show only the name of the banner you're looking towards. Names can also be shown with a dedicated keybind (hold or toggle), always, or automatically for the banner at your crosshair, all configurable in the client config. The distance to each banner is shown next to its name, which servers can turn off in the common config. To deactivate the waypoint, simply break the banner or remove it from the map it's bound to. The maximum range of banner waypoints can be configured, with the default being the same as the maximum range of player waypoints (60 million blocks).
 
-- Multiloader and multiversion management with helper classes
-- Supports both obfuscated and unobfuscated game versions
-- Dependency handling using Stonecutter versioned properties
-- Versioned class tweakers and access transformers
-- Automatic Mixin and entrypoint registration
-- Automated Modrinth and CurseForge publishing
+Bannerpoint can be used as a fully server-side mod, but requires a resource pack on the client for banner waypoint icons. The resource pack can be installed either by simply [downloading it](https://raw.githubusercontent.com/pajicadvance/bannerpoint/multicutter-v3/resourcepack/Bannerpoint%20Icons.zip) and enabling it on in the client, or if running a Fabric server, by installing [Polymer](https://modrinth.com/mod/polymer) on the server and turning on Auto Host, which will automatically prompt connecting clients to download the resource pack. Showing banner names and distances requires having the mod installed on the client.
 
-### Pre-configured content
-
-- Versions:
-    - 1.21.1 Fabric and NeoForge
-    - 26.1.2 Fabric and NeoForge
-    - 26.2 Fabric and NeoForge
-- Dependencies:
-    - Fabric API (required)
-    - Fzzy Config (required)
-    - Mixson (required)
-    - MixinConstraints (JiJ-d)
-    - Sodium (runtime)
-
-No instructions on how to use this yet. If you do want to try it out, the only big difference compared to other templates is that dependencies are declared inside `stonecutter.properties.toml` and not manually inside the build scripts. You only need to add repositories to the build scripts. You can see how pre-configured dependencies are added as examples.
-
-The template may have bugs and oversights as I haven't moved any of my mods to it yet.
-
-Tooling used:
-- [Fabric Loom](https://github.com/FabricMC/fabric-loom): Used for the Fabric build script
-- [ModDevGradle](https://github.com/neoforged/ModDevGradle): Used for the NeoForge build script
-- [Stonecutter](https://stonecutter.kikugie.dev/): Multiloader and multiversion handling
-- [Loom Backwards Compatibility](https://codeberg.org/KikuGie/loom-back-compat): Allows the Fabric build script to handle both obfuscated and unobfuscated versions of the game
-- [Fletching Table](https://stonecutter.kikugie.dev/wiki/fletching-table/#fletching-table-overview): Handles automatic mixin and entrypoint registration
-- [Mod Publish Plugin](https://github.com/modmuss50/mod-publish-plugin): Handles automated publishing to Modrinth and CurseForge
+![example](https://cdn.modrinth.com/data/cached_images/2ce75a4850c573fcf10b8640649bee00683439bf_0.webp)

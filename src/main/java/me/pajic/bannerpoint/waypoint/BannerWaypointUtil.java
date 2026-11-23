@@ -5,10 +5,11 @@ import me.pajic.bannerpoint.extension.BannerBlockEntityExtension;
 import me.pajic.bannerpoint.extension.ServerLevelExtension;
 import me.pajic.bannerpoint.mixin.WaypointIconAccessor;
 import me.pajic.bannerpoint.networking.NetworkingUtil;
+import me.pajic.bannerpoint.networking.S2CBannerDistancePayload;
 import me.pajic.bannerpoint.networking.S2CBannerNamePayload;
 import me.pajic.bannerpoint.saveddata.LevelSavedBanners;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,75 +22,115 @@ import net.minecraft.world.waypoints.Waypoint;
 import net.minecraft.world.waypoints.WaypointStyleAsset;
 import net.minecraft.world.waypoints.WaypointStyleAssets;
 import net.minecraft.world.waypoints.WaypointTransmitter;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class BannerWaypointUtil {
 
 	private static final ResourceKey<WaypointStyleAsset> BANNER = ResourceKey.create(WaypointStyleAssets.ROOT_ID, Bannerpoint.id("banner"));
-	public static boolean savedDataLoadFinished = false;
+	private static final int FAR_DISTANCE_STEP = 10;
 
 	public static void startTrackingSaved(ServerLevel level, LevelSavedBanners data) {
-		data.getBanners().forEach(pos -> {
-			BlockEntity be = level.getBlockEntity(pos);
-			if (be instanceof BannerBlockEntity bbe) startTracking(level, bbe, false);
-		});
-		savedDataLoadFinished = true;
+		for (BlockPos pos : List.copyOf(data.getBanners())) {
+			if (level.getBlockEntity(pos) instanceof BannerBlockEntity bbe) refreshTracking(level, bbe);
+			else data.removeBanner(pos);
+		}
 		Bannerpoint.debugLog("Finished loading saved banners");
 	}
 
 	public static void startTrackingOnInit(ServerLevel level, BlockEntity be) {
-		if (savedDataLoadFinished && level instanceof ServerLevel serverLevel && be instanceof BannerBlockEntity bbe) startTracking(serverLevel, bbe, true);
+		if (be instanceof BannerBlockEntity bbe) refreshTracking(level, bbe);
 	}
 
-	public static void setMapTracking(boolean shouldTrack, ServerLevel level, BlockPos pos) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (Bannerpoint.CONFIG.transmitWhenTiedToMap.get() && be instanceof BannerBlockEntity bbe) {
-			BannerBlockEntityExtension bbee = (BannerBlockEntityExtension) bbe;
-			bbee.bannerpoint$setTiedToMap(shouldTrack);
-			if (!bbee.bannerpoint$hasCustomName()) {
-				if (shouldTrack) startTracking(level.getLevel(), bbe, true);
-				else stopTracking(level.getLevel(), bbe);
+	public static void setMapTracking(boolean tied, ServerLevel level, BlockPos pos) {
+		LevelSavedBanners data = getData(level);
+		if (data == null || !(level.getBlockEntity(pos) instanceof BannerBlockEntity bbe)) return;
+		if (tied) data.addMapTie(pos);
+		else data.removeMapTie(pos);
+		refreshTracking(level, bbe);
+	}
+
+	public static void refreshTracking(ServerLevel level, BannerBlockEntity bbe) {
+		LevelSavedBanners data = getData(level);
+		if (data == null) return;
+		BlockPos pos = bbe.getBlockPos();
+		BannerBlockEntityExtension bbee = (BannerBlockEntityExtension) bbe;
+		if (bbee.bannerpoint$consumeLegacyTiedToMap() && data.getMapTies(pos) == 0) data.addMapTie(pos);
+		BannerBlockEntity previous = data.getTracked(pos);
+		if (previous != null && previous != bbe) {
+			level.getWaypointManager().untrackWaypoint((WaypointTransmitter) previous);
+			data.removeTracked(pos);
+			previous = null;
+		}
+		Bannerpoint.debugLog("Refreshing banner at {}", pos.toShortString());
+		if (((WaypointTransmitter) bbe).isTransmittingWaypoint()) {
+			if (previous == null) {
+				level.getWaypointManager().trackWaypoint((WaypointTransmitter) bbe);
+				data.setTracked(pos, bbe);
+				Bannerpoint.debugLog("Started tracking banner");
+			} else {
+				level.getWaypointManager().remakeConnections((WaypointTransmitter) bbe);
 			}
-			bbe.setChanged();
+			data.saveBanner(pos);
+		} else {
+			if (previous != null) {
+				level.getWaypointManager().untrackWaypoint((WaypointTransmitter) bbe);
+				data.removeTracked(pos);
+				Bannerpoint.debugLog("Stopped tracking banner");
+			}
+			data.removeBanner(pos);
 		}
 	}
 
-	public static void startTracking(ServerLevel level, BannerBlockEntity bbe, boolean save) {
-		WaypointTransmitter wt = (WaypointTransmitter) bbe;
-		Bannerpoint.debugLog("Attempting to track banner at {}", bbe.getBlockPos().toShortString());
-		if (wt.isTransmittingWaypoint()) {
-			level.getWaypointManager().trackWaypoint(wt);
-			Bannerpoint.debugLog("Started tracking banner");
+	public static void onBannerRemoved(ServerLevel level, BlockPos pos) {
+		LevelSavedBanners data = getData(level);
+		if (data == null) return;
+		BannerBlockEntity tracked = data.removeTracked(pos);
+		if (tracked != null) {
+			level.getWaypointManager().untrackWaypoint((WaypointTransmitter) tracked);
+			Bannerpoint.debugLog("Stopped tracking removed banner at {}", pos.toShortString());
 		}
-		if (save) {
-			LevelSavedBanners data = ((ServerLevelExtension) level).bannerpoint$getSavedBanners();
-			data.saveBanner(bbe.getBlockPos());
-			Bannerpoint.debugLog("Saved banner to level data");
-		}
+		data.removeBanner(pos);
+		data.clearMapTies(pos);
 	}
 
-	public static void stopTracking(ServerLevel level, BannerBlockEntity bbe) {
-		level.getWaypointManager().untrackWaypoint((WaypointTransmitter) bbe);
-		LevelSavedBanners data = ((ServerLevelExtension) level).bannerpoint$getSavedBanners();
-		data.removeBanner(bbe.getBlockPos());
+	public static boolean isTiedToMap(@Nullable ServerLevel level, BlockPos pos) {
+		LevelSavedBanners data = level == null ? null : getData(level);
+		return data != null && data.getMapTies(pos) > 0;
 	}
 
-	@SuppressWarnings("resource")
+	private static @Nullable LevelSavedBanners getData(ServerLevel level) {
+		return ((ServerLevelExtension) level).bannerpoint$getSavedBanners();
+	}
+
 	public static Optional<WaypointTransmitter.Connection> createConnection(BannerBlockEntity bbe, ServerPlayer player, Waypoint.Icon icon) {
 		if (doesSourceIgnoreReceiver(bbe, player)) return Optional.empty();
-		BannerBlockEntityExtension bbee = (BannerBlockEntityExtension) bbe;
-		if (bbee.bannerpoint$hasCustomName() && bbe.hasCustomName()) player.level().players().forEach(serverPlayer ->
-				NetworkingUtil.s2c(serverPlayer, new S2CBannerNamePayload(
-						bbee.bannerpoint$getUUID(),
-						MutableComponent.create(bbee.bannerpoint$getCustomName().getContents())
-								.withColor(bbe.getBaseColor().getTextColor()))
-				)
-		);
 		if (isReallyFar(bbe, player)) return Optional.of(new BannerAzimuthConnection(bbe, icon, player));
 		return !WaypointTransmitter.isChunkVisible(ChunkPos.containing(bbe.getBlockPos()), player) ?
 				Optional.of(new BannerChunkConnection(bbe, icon, player)) :
 				Optional.of(new BannerBlockConnection(bbe, icon, player));
+	}
+
+	public static void sendName(BannerBlockEntity bbe, ServerPlayer player) {
+		Component customName = bbe.getCustomName();
+		if (customName == null) return;
+		NetworkingUtil.s2cIfSupported(player, new S2CBannerNamePayload(
+				((BannerBlockEntityExtension) bbe).bannerpoint$getUUID(),
+				customName,
+				bbe.getBaseColor().getTextColor()
+		));
+	}
+
+	public static void sendFarDistance(UUID uuid, ServerPlayer player, int distance) {
+		if (!Bannerpoint.CONFIG.showDistance.get()) return;
+		NetworkingUtil.s2cIfSupported(player, new S2CBannerDistancePayload(uuid, distance));
+	}
+
+	public static int roundedDistance(BannerBlockEntity bbe, ServerPlayer player) {
+		return (int) Math.round(distance(bbe.getBlockPos(), player) / FAR_DISTANCE_STEP) * FAR_DISTANCE_STEP;
 	}
 
 	public static Waypoint.Icon createBannerIcon(DyeColor color) {
